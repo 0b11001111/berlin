@@ -67,7 +67,7 @@ Thus, when running
       'use strict';
       document.getElementById("familyName").value = "Your full name";
       document.getElementById("email").value = "youremail@example.com";
-      document.getElementById("telephone").value = "0123456789;
+      document.getElementById("telephone").value = "0123456789";
       document.getElementsByName("surveyAccepted")[0].value = 1;
       document.getElementById("agbgelesen").checked = true;
       // This may lead to an endles loop of reloading the page if one of the fields is invalid!
