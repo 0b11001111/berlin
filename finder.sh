@@ -5,6 +5,18 @@ DELAY_SEC=300
 COOKIE_JAR="/tmp/cookies.txt"
 BASE_URL="https://service.berlin.de"
 
+# Check if all dependencies are available
+if ! command -v wget &>/dev/null; then
+  echo "'wget' is not available"
+  exit 1
+fi
+
+if ! command -v xmllint &>/dev/null; then
+  echo "'xmllint' (libxml2) is not available"
+  exit 1
+fi
+
+# Helper functions
 function fetch {
   wget --keep-session-cookies --save-cookies "$COOKIE_JAR" --load-cookies "$COOKIE_JAR" --quiet --output-document - "$1"
 }
@@ -20,7 +32,7 @@ function notify {
   echo -e "$1, $2\a"
 }
 
-function crawl_appointment {
+function scan_calendar {
   initial_target=$1
   target=$initial_target
 
@@ -37,10 +49,10 @@ function crawl_appointment {
       break
     fi
 
-    next=$(echo "$contents" | xpath_search "string(//th[@class='next']/a/@href)")
-    target="$BASE_URL$next"
+    next_page=$(echo "$contents" | xpath_search "string(//th[@class='next_page']/a/@href)")
+    target="$BASE_URL$next_page"
 
-    if [ "$next" == "" ]; then
+    if [ "$next_page" == "" ]; then
       break
     fi
   done
@@ -48,15 +60,16 @@ function crawl_appointment {
 
 TARGET=$(fetch $BASE_URL/dienstleistung/120686/ | xpath_search "string(//a[@class='btn']/@href)")
 
+# Entry point
 if ((${#CRON_FLAG} > 0)); then
-  crawl_appointment "$TARGET"
+  scan_calendar "$TARGET"
   exit
 else
   while true; do
-    crawl_appointment "$TARGET"
+    scan_calendar "$TARGET"
 
     duration=$(date -u -d @"$DELAY_SEC" +'%-Hh %-Mm %-Ss')
-    echo "Wait for next crawl in $duration"
+    echo "Wait for next_page crawl in $duration"
 
     sleep ${DELAY_SEC}
   done
