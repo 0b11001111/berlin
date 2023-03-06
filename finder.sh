@@ -2,6 +2,7 @@
 
 CRON_FLAG=$1
 DELAY_SEC=300
+DELAY_FMT=$(date -u -d @"$DELAY_SEC" +'%-Hh %-Mm %-Ss')
 COOKIE_JAR="/tmp/cookies.txt"
 BASE_URL="https://service.berlin.de"
 
@@ -49,7 +50,7 @@ function scan_calendar {
       break
     fi
 
-    next_page=$(echo "$contents" | xpath_search "string(//th[@class='next_page']/a/@href)")
+    next_page=$(echo "$contents" | xpath_search "string(//th[@class='next']/a/@href)")
     target="$BASE_URL$next_page"
 
     if [ "$next_page" == "" ]; then
@@ -67,10 +68,7 @@ if ((${#CRON_FLAG} > 0)); then
 else
   while true; do
     scan_calendar "$TARGET"
-
-    duration=$(date -u -d @"$DELAY_SEC" +'%-Hh %-Mm %-Ss')
-    echo "Wait for next_page crawl in $duration"
-
+    echo "Wait for next_page crawl in $DELAY_FMT"
     sleep ${DELAY_SEC}
   done
 fi
