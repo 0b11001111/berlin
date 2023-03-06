@@ -1,9 +1,11 @@
-# Anmeldung Finder Berlin
+# Appointment Finder Berlin
 
 When moving to or within Germany, one has to (re-)register residency within two weeks.
 In Berlin, this can be a bit challenging at times as the offices are overloaded.
 This repository provides a little script that scrapes Berlin's
 [service website](https://service.berlin.de/dienstleistung/120686/) for available appointments.
+
+Further, this repository contains a [guide on how to find an apartment in Berlin](./ApartmentHowTo.md).
 
 ## Description
 
